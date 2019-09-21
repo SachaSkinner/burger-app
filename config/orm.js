@@ -36,60 +36,62 @@ function objToSql(ob) {
       arr.push(key + "=" + value);
     }
   }
+}
 
+  // Export the ORM object in module.exports.
 
-// Export the ORM object in module.exports.
+  // Object for all our SQL statement functions.
+  var orm = {
+    all: function (tableInput, cb) {
+      var queryString = "SELECT * FROM " + tableInput + ";";
+      connection.query(queryString, function (err, result) {
+        if (err) {
+          throw err;
+        }
+        cb(result);
+      });
+    },
+    create: function (table, cols, vals, cb) {
+      var queryString = "INSERT INTO " + table;
 
-// Object for all our SQL statement functions.
-var orm = {
-  all: function(tableInput, cb) {
-    var queryString = "SELECT * FROM " + tableInput + ";";
-    connection.query(queryString, function(err, result) {
-      if (err) {
-        throw err;
-      }
-      cb(result);
-    });
-  },
-  create: function(table, cols, vals, cb) {
-    var queryString = "INSERT INTO " + table;
+      queryString += " (";
+      queryString += cols.toString();
+      queryString += ") ";
+      queryString += "VALUES (";
+      queryString += printQuestionMarks(vals.length);
+      queryString += ") ";
 
-    queryString += " (";
-    queryString += cols.toString();
-    queryString += ") ";
-    queryString += "VALUES (";
-    queryString += printQuestionMarks(vals.length);
-    queryString += ") ";
+      console.log(queryString);
 
-    console.log(queryString);
+      connection.query(queryString, vals, function (err, result) {
+        if (err) {
+          throw err;
+        }
 
-    connection.query(queryString, vals, function(err, result) {
-      if (err) {
-        throw err;
-      }
+        cb(result);
+      });
+    },
+    // An example of objColVals would be {name: panther, sleepy: true}
+    update: function (table, objColVals, condition, cb) {
+      var queryString = "UPDATE " + table;
 
-      cb(result);
-    });
-  },
-  // An example of objColVals would be {name: panther, sleepy: true}
-  update: function(table, objColVals, condition, cb) {
-    var queryString = "UPDATE " + table;
+      queryString += " SET ";
+      queryString += objToSql(objColVals);
+      queryString += " WHERE ";
+      queryString += condition;
 
-    queryString += " SET ";
-    queryString += objToSql(objColVals);
-    queryString += " WHERE ";
-    queryString += condition;
+      console.log(queryString);
+      connection.query(queryString, function (err, result) {
+        if (err) {
+          throw err;
+        }
 
-    console.log(queryString);
-    connection.query(queryString, function(err, result) {
-      if (err) {
-        throw err;
-      }
-
-      cb(result);
-    });
+        cb(result);
+      });
   }
 };
+
+
 
 // Export the orm object for the model (cat.js).
 module.exports = orm;

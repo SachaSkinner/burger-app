@@ -26,8 +26,7 @@ $(function() {
     event.preventDefault();
 
     var newBurger = {
-      name: $("#burger").val().trim(),
-      devoured: false
+      burger_name: $("#burger").val().trim()
     };
 
     // Send the POST request.

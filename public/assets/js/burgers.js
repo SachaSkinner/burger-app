@@ -24,8 +24,12 @@ $(function() {
     var id = $(this).attr("data-id")
     // Make sure to preventDefault on a submit event.
     event.preventDefault();
-
+    if($("#burger").val().trim().length <= 0){
+      alert("Oops..put your burger!");
+      return;
+    }
     var newBurger = {
+
       burger_name: $("#burger").val().trim()
     };
 
